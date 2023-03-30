@@ -25,7 +25,7 @@ version '0.1'
 
 jar {
     manifest {
-        attributes 'Main-Class': 'no.nav.org.org-ekstern-proxy.MainKt'
+        attributes 'Main-Class': 'no.nav.org.proxy.MainKt'
     }
 }
 
@@ -35,7 +35,7 @@ shadowJar {
 }
 
 application {
-    mainClassName = 'no.nav.org.org-ekstern-proxy.MainKt'
+    mainClassName = 'no.nav.org.proxy.MainKt'
 }
 
 tasks.withType(JavaExec) {
