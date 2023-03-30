@@ -1,4 +1,6 @@
 # org-ekstern-proxy
+(Shameless ripoff fra https://github.com/navikt/saas-proxy)
+
 API for tjenester utenfor Nais klustere for å nå interne nav-apier i google cloud levert av team org.
 Proxyen slipper kun gjennom hvitelistede anrop med et gyldig azure token.
 
