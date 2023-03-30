@@ -1,0 +1,7 @@
+{
+  "nom": {
+    "nom-api": [
+      "POST /graphql"
+    ]
+  }
+}

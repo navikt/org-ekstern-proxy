@@ -1,0 +1,49 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: org-ekstern-proxy
+  namespace: org
+  labels:
+    team: org
+spec:
+  image: {{ image }}
+  port: 8080
+  replicas:
+    min: 2
+    max: 2
+  liveness:
+    path: /internal/isAlive
+    initialDelay: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  readiness:
+    path: /internal/isReady
+    initialDelay: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  prometheus:
+    enabled: true
+    path: /internal/metrics
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1024Mi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  ingresses:
+    - "https://org-ekstern-proxy.nav.no"
+    - "https://org-ekstern-proxy.intern.nav.no"
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+  accessPolicy:
+    inbound:
+    outbound:
+      rules:
+        - application: nom-api
+          namespace: nom
+  env:
+    - name: WHITELIST_FILE
+      value: '/whitelist/prod.json'
