@@ -40,8 +40,6 @@ spec:
       allowAllUsers: true
       tenant: trygdeetaten.no
   accessPolicy:
-    inbound:
-      rules:
     outbound:
       rules:
         - application: nom-api

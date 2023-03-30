@@ -39,7 +39,6 @@ spec:
       enabled: true
       allowAllUsers: true
   accessPolicy:
-    inbound:
     outbound:
       rules:
         - application: nom-api
