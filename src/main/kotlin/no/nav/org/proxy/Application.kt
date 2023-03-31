@@ -152,13 +152,15 @@ object Application {
                     log.debug { forwardHeaders.filter { it.first.lowercase() != "authorization" } }
                     val internUrl = "http://$targetApp.$team${req.uri}" // svc.cluster.local skipped due to same cluster
                     val redirect = Request(req.method, internUrl).body(req.body).headers(forwardHeaders)
-                    log.info { "Forwarded call to $internUrl" }
+                    log.info { "Forwarded call to ${req.method} $internUrl" }
+                    log.debug { "Body for forwarded call:\n ${req.body}" }
                     val time = System.currentTimeMillis()
                     val result = client(redirect)
                     if (result.status.code == 504) {
                         log.info { "Status Client Timeout after ${System.currentTimeMillis() - time} millis" }
                     }
                     log.debug { result.headers }
+                    log.debug { "Response body:\n ${result.body}" }
                     result
                 }
             }
