@@ -32,7 +32,7 @@ spec:
       cpu: 100m
       memory: 512Mi
   ingresses:
-    - "https://org-ekstern-proxy.ekstern.dev.nav.no"
+    - "https://org-ekstern-proxy.ekstern.nav.no"
     - "https://org-ekstern-proxy.dev.intern.nav.no"
   azure:
     application:
