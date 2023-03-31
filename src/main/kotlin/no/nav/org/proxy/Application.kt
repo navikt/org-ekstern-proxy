@@ -158,6 +158,7 @@ object Application {
                     if (result.status.code == 504) {
                         log.info { "Status Client Timeout after ${System.currentTimeMillis() - time} millis" }
                     }
+                    log.debug { result.headers }
                     result
                 }
             }
