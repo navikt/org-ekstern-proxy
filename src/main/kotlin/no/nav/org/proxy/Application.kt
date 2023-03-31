@@ -147,6 +147,7 @@ object Application {
                             !blockFromForwarding.contains(it.first) &&
                             !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
                         }.toList()
+                    req.headers.filter { !it.first.equals("Authorization") }.forEach { log.info { it } }
                     val internUrl = "http://$targetApp.$team${req.uri}" // svc.cluster.local skipped due to same cluster
                     val redirect = Request(req.method, internUrl).body(req.body).headers(forwardHeaders)
                     log.info { "Forwarded call to $internUrl" }
