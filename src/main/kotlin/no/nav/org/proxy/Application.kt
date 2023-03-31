@@ -150,7 +150,7 @@ object Application {
                         }.toList()
                     log.debug { req.headers.filter { it.first.lowercase() != "authorization" }.toList() }
                     log.debug { forwardHeaders.filter { it.first.lowercase() != "authorization" } }
-                    val internUrl = "http://$targetApp.$team${req.uri}" // svc.cluster.local skipped due to same cluster
+                    val internUrl = "http://$targetApp.$team.svc.cluster.local${req.uri}" // svc.cluster.local skipped due to same cluster
                     val redirect = Request(req.method, internUrl).body(req.body).headers(forwardHeaders)
                     log.info { "Forwarded call to $internUrl" }
                     val time = System.currentTimeMillis()
