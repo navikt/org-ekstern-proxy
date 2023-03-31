@@ -21,6 +21,7 @@ import org.http4k.server.Netty
 import org.http4k.server.asServer
 import java.io.File
 import java.io.StringWriter
+import java.util.*
 
 const val NAIS_DEFAULT_PORT = 8080
 const val NAIS_ISALIVE = "/internal/isAlive"
@@ -147,7 +148,8 @@ object Application {
                             !blockFromForwarding.contains(it.first) &&
                             !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
                         }.toList()
-                    req.headers.filter { !it.first.equals("Authorization") }.forEach { log.info { it } }
+                    log.info { req.headers.filter { !it.first.lowercase().equals("authorization") }.toList() }
+                    log.info { forwardHeaders }
                     val internUrl = "http://$targetApp.$team${req.uri}" // svc.cluster.local skipped due to same cluster
                     val redirect = Request(req.method, internUrl).body(req.body).headers(forwardHeaders)
                     log.info { "Forwarded call to $internUrl" }
