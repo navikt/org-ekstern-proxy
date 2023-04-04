@@ -118,24 +118,32 @@ object Application {
                     Response(BAD_REQUEST).body("Proxy: Invalid preflight - missing header ACCESS_CONTROL_REQUEST_METHOD")
                 } else {
                     val accessMethod = Method.valueOf(accessMethodHeader)
-                    rules.forEach { team ->
-                        team.value.forEach { app ->
-                            app.value.filter { it.evaluateAsRule(accessMethod, "/$path") }.first()?.let {
-                                val preflightUrl = "http://${app.key}.${team.key}${req.uri}"
-                                val forwardHeaders =
-                                    req.headers.filter {
-                                        !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
-                                    }.toList()
-                                val redirect = Request(req.method, preflightUrl).headers(forwardHeaders)
-                                log.info { "Forwarded call to ${req.method} $preflightUrl" }
-                                val result = client(redirect)
-                                log.debug { result }
-                                result
+                    var preflightUrl: String? = run outer@{
+                        rules.forEach { team ->
+                            team.value.forEach { app ->
+                                app.value.firstOrNull { it.evaluateAsRule(accessMethod, "/$path") }?.let {
+                                    val preflightUrl = "http://${app.key}.${team.key}${req.uri}"
+                                    log.debug { "Found rule, created preflight proxy: $preflightUrl" }
+                                    return@outer preflightUrl
+                                }
                             }
                         }
+                        null
                     }
-                    log.info { "Proxy: Bad preflight - not whitelisted" }
-                    Response(BAD_REQUEST).body("Proxy: Bad preflight - not whitelisted")
+                    if (preflightUrl != null) {
+                        val forwardHeaders =
+                            req.headers.filter {
+                                !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
+                            }.toList()
+                        val redirect = Request(req.method, preflightUrl).headers(forwardHeaders)
+                        log.info { "Forwarded call to ${req.method} $preflightUrl" }
+                        val result = client(redirect!!)
+                        log.debug { result }
+                        result
+                    } else {
+                        log.info { "Proxy: Bad preflight - not whitelisted" }
+                        Response(BAD_REQUEST).body("Proxy: Bad preflight - not whitelisted")
+                    }
                 }
             } else {
                 val targetApp = req.header(TARGET_APP)
