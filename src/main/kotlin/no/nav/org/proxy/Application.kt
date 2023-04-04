@@ -137,7 +137,7 @@ object Application {
                             }.toList()
                         val redirect = Request(req.method, preflightUrl).headers(forwardHeaders)
                         log.info { "Forwarded call to ${req.method} $preflightUrl" }
-                        val result = client(redirect!!)
+                        val result = client(redirect)
                         log.debug { result }
                         result
                     } else {
