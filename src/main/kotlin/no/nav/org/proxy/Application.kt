@@ -121,7 +121,7 @@ object Application {
                     rules.forEach { team ->
                         team.value.forEach { app ->
                             app.value.filter { it.evaluateAsRule(accessMethod, "/$path") }.first()?.let {
-                                val preflightUrl = "http://$app.$team${req.uri}"
+                                val preflightUrl = "http://${app.key}.${team.key}${req.uri}"
                                 val forwardHeaders =
                                     req.headers.filter {
                                         !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
