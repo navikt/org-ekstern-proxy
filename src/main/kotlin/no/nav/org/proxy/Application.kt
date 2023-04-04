@@ -21,7 +21,6 @@ import org.http4k.server.Netty
 import org.http4k.server.asServer
 import java.io.File
 import java.io.StringWriter
-import java.util.*
 
 const val NAIS_DEFAULT_PORT = 8080
 const val NAIS_ISALIVE = "/internal/isAlive"
@@ -34,9 +33,10 @@ const val API_URI = "/{$API_URI_VAR:.*}"
 
 const val TARGET_APP = "target-app"
 const val TARGET_CLIENT_ID = "target-client-id"
-const val AUTHORIZATION = "Authorization"
 const val HOST = "host"
 const val X_CLOUD_TRACE_CONTEXT = "x-cloud-trace-context"
+
+const val ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method"
 
 const val env_WHITELIST_FILE = "WHITELIST_FILE"
 
@@ -111,57 +111,86 @@ object Application {
             val path = req.path(API_URI_VAR) ?: ""
             Metrics.apiCalls.labels(path).inc()
 
-            val targetApp = req.header(TARGET_APP)
-            val targetClientId = req.header(TARGET_CLIENT_ID)
-
-            if (targetApp == null || targetClientId == null) {
-                log.info { "Proxy: Bad request - missing header" }
-                File("/tmp/missingheader").writeText("Call:\nPath: $path\nMethod: ${req.method}\n Uri: ${req.uri}\nBody: ${req.body}\nHeaders: $${req.headers}")
-
-                Response(BAD_REQUEST).body("Proxy: Bad request - missing header")
-            } else {
-                File("/tmp/latestcall").writeText("Call:\nPath: $path\nMethod: ${req.method}\n Uri: ${req.uri}\nBody: ${req.body}\nHeaders: $${req.headers}")
-
-                val team = rules.filter { it.value.keys.contains(targetApp) }.map { it.key }.firstOrNull()
-
-                val approvedByRules =
-                    if (team == null) {
-                        false
-                    } else {
-                        rules[team]?.let { it[targetApp] }?.filter {
-                            it.evaluateAsRule(req.method, "/$path")
-                        }?.firstOrNull()?.let {
-                            true
-                        } ?: false
-                    }
-
-                if (!approvedByRules) {
-                    log.info { "Proxy: Bad request - not whitelisted" }
-                    Response(BAD_REQUEST).body("Proxy: Bad request")
-                } else if (!TokenValidation.containsValidToken(req, targetClientId)) {
-                    log.info { "Proxy: Not authorized" }
-                    Response(UNAUTHORIZED).body("Proxy: Not authorized")
+            if (req.method == Method.OPTIONS) { // preflight - send unchanged to backend
+                val accessMethodHeader = req.header(ACCESS_CONTROL_REQUEST_METHOD)
+                if (accessMethodHeader == null) {
+                    log.info { "Proxy: Invalid preflight - missing header ACCESS_CONTROL_REQUEST_METHOD" }
+                    Response(BAD_REQUEST).body("Proxy: Invalid preflight - missing header ACCESS_CONTROL_REQUEST_METHOD")
                 } else {
-                    val blockFromForwarding = listOf(TARGET_APP, TARGET_CLIENT_ID, HOST)
-                    val forwardHeaders =
-                        req.headers.filter {
-                            !blockFromForwarding.contains(it.first) &&
-                            !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
-                        }.toList()
-                    log.debug { req.headers.filter { it.first.lowercase() != "authorization" }.toList() }
-                    log.debug { forwardHeaders.filter { it.first.lowercase() != "authorization" } }
-                    val internUrl = "http://$targetApp.$team${req.uri}" // svc.cluster.local skipped due to same cluster
-                    val redirect = Request(req.method, internUrl).body(req.body).headers(forwardHeaders)
-                    log.info { "Forwarded call to ${req.method} $internUrl" }
-                    log.debug { "Body for forwarded call:\n ${req.body}" }
-                    val time = System.currentTimeMillis()
-                    val result = client(redirect)
-                    if (result.status.code == 504) {
-                        log.info { "Status Client Timeout after ${System.currentTimeMillis() - time} millis" }
+                    val accessMethod = Method.valueOf(accessMethodHeader)
+                    rules.forEach { team ->
+                        team.value.forEach { app ->
+                            app.value.filter { it.evaluateAsRule(accessMethod, "/$path") }.first()?.let {
+                                val preflightUrl = "http://$app.$team${req.uri}"
+                                val forwardHeaders =
+                                    req.headers.filter {
+                                        !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
+                                    }.toList()
+                                val redirect = Request(req.method, preflightUrl).headers(forwardHeaders)
+                                log.info { "Forwarded call to ${req.method} $preflightUrl" }
+                                val result = client(redirect)
+                                log.debug { result }
+                                result
+                            }
+                        }
                     }
-                    log.debug { result.headers }
-                    log.debug { "Response body:\n ${result.body}" }
-                    result
+                    log.info { "Proxy: Bad preflight - not whitelisted" }
+                    Response(BAD_REQUEST).body("Proxy: Bad preflight - not whitelisted")
+                }
+            } else {
+                val targetApp = req.header(TARGET_APP)
+                val targetClientId = req.header(TARGET_CLIENT_ID)
+
+                if (targetApp == null || targetClientId == null) {
+                    log.info { "Proxy: Bad request - missing header" }
+                    File("/tmp/missingheader").writeText("Call:\nPath: $path\nMethod: ${req.method}\n Uri: ${req.uri}\nBody: ${req.body}\nHeaders: $${req.headers}")
+
+                    Response(BAD_REQUEST).body("Proxy: Bad request - missing header")
+                } else {
+                    File("/tmp/latestcall").writeText("Call:\nPath: $path\nMethod: ${req.method}\n Uri: ${req.uri}\nBody: ${req.body}\nHeaders: $${req.headers}")
+
+                    val team = rules.filter { it.value.keys.contains(targetApp) }.map { it.key }.firstOrNull()
+
+                    val approvedByRules =
+                        if (team == null) {
+                            false
+                        } else {
+                            rules[team]?.let { it[targetApp] }?.filter {
+                                it.evaluateAsRule(req.method, "/$path")
+                            }?.firstOrNull()?.let {
+                                true
+                            } ?: false
+                        }
+
+                    if (!approvedByRules) {
+                        log.info { "Proxy: Bad request - not whitelisted" }
+                        Response(BAD_REQUEST).body("Proxy: Bad request")
+                    } else if (!TokenValidation.containsValidToken(req, targetClientId)) {
+                        log.info { "Proxy: Not authorized" }
+                        Response(UNAUTHORIZED).body("Proxy: Not authorized")
+                    } else {
+                        val blockFromForwarding = listOf(TARGET_APP, TARGET_CLIENT_ID, HOST)
+                        val forwardHeaders =
+                            req.headers.filter {
+                                !blockFromForwarding.contains(it.first) &&
+                                        !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
+                            }.toList()
+                        log.debug { req.headers.filter { it.first.lowercase() != "authorization" }.toList() }
+                        log.debug { forwardHeaders.filter { it.first.lowercase() != "authorization" } }
+                        val internUrl =
+                            "http://$targetApp.$team${req.uri}" // svc.cluster.local skipped due to same cluster
+                        val redirect = Request(req.method, internUrl).body(req.body).headers(forwardHeaders)
+                        log.info { "Forwarded call to ${req.method} $internUrl" }
+                        log.debug { "Body for forwarded call:\n ${req.body}" }
+                        val time = System.currentTimeMillis()
+                        val result = client(redirect)
+                        if (result.status.code == 504) {
+                            log.info { "Status Client Timeout after ${System.currentTimeMillis() - time} millis" }
+                        }
+                        log.debug { result.headers }
+                        log.debug { "Response body:\n ${result.body}" }
+                        result
+                    }
                 }
             }
         },
