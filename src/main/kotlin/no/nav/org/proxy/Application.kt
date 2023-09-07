@@ -34,7 +34,6 @@ const val API_URI = "/{$API_URI_VAR:.*}"
 const val TARGET_APP = "target-app"
 const val TARGET_CLIENT_ID = "target-client-id"
 const val HOST = "host"
-const val X_CLOUD_TRACE_CONTEXT = "x-cloud-trace-context"
 
 const val ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method"
 
@@ -131,10 +130,7 @@ object Application {
                         null
                     }
                     if (preflightUrl != null) {
-                        val forwardHeaders =
-                            req.headers.filter {
-                                !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
-                            }.toList()
+                        val forwardHeaders = req.headers.toList()
                         val redirect = Request(req.method, preflightUrl).headers(forwardHeaders)
                         log.info { "Forwarded call to ${req.method} $preflightUrl" }
                         val result = client(redirect)
