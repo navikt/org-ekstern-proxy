@@ -1,8 +1,8 @@
-package no.nav.org.proxy.token
+package no.nav.saas.proxy.token
 
 import mu.KotlinLogging
-import no.nav.org.proxy.env_WHITELIST_FILE
-import no.nav.org.proxy.toNavRequest
+import no.nav.saas.proxy.env_WHITELIST_FILE
+import no.nav.saas.proxy.toNavRequest
 import no.nav.security.token.support.core.configuration.IssuerProperties
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration
 import no.nav.security.token.support.core.validation.JwtTokenValidationHandler
@@ -26,10 +26,10 @@ object TokenValidation {
                 mapOf(
                     "azure" to IssuerProperties(
                         URL(System.getenv(env_AZURE_APP_WELL_KNOWN_URL)),
-                        listOf(clientId),
-                    ),
-                ),
-            ),
+                        listOf(clientId)
+                    )
+                )
+            )
         )
         validators[clientId] = validationHandler
         return validationHandler

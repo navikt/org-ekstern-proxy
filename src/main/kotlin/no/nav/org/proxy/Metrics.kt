@@ -1,4 +1,4 @@
-package no.nav.org.proxy
+package no.nav.saas.proxy
 
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.Gauge
