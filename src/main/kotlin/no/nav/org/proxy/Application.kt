@@ -131,10 +131,7 @@ object Application {
                         null
                     }
                     if (preflightUrl != null) {
-                        val forwardHeaders =
-                            req.headers.filter {
-                                !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
-                            }.toList()
+                        val forwardHeaders = req.headers
                         val redirect = Request(req.method, preflightUrl).headers(forwardHeaders)
                         log.info { "Forwarded call to ${req.method} $preflightUrl" }
                         val result = client(redirect)
@@ -178,11 +175,7 @@ object Application {
                         Response(UNAUTHORIZED).body("Proxy: Not authorized")
                     } else {
                         val blockFromForwarding = listOf(TARGET_APP, TARGET_CLIENT_ID, HOST)
-                        val forwardHeaders =
-                            req.headers.filter {
-                                !blockFromForwarding.contains(it.first) &&
-                                        !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
-                            }.toList()
+                        val forwardHeaders = req.headers
                         log.debug { req.headers.filter { it.first.lowercase() != "authorization" }.toList() }
                         log.debug { forwardHeaders.filter { it.first.lowercase() != "authorization" } }
                         val internUrl =
