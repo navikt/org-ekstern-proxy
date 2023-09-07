@@ -180,8 +180,7 @@ object Application {
                         val blockFromForwarding = listOf(TARGET_APP, TARGET_CLIENT_ID, HOST)
                         val forwardHeaders =
                             req.headers.filter {
-                                !blockFromForwarding.contains(it.first) &&
-                                        !it.first.startsWith("x-") || it.first == X_CLOUD_TRACE_CONTEXT
+                                !blockFromForwarding.contains(it.first)
                             }.toList()
                         log.debug { req.headers.filter { it.first.lowercase() != "authorization" }.toList() }
                         log.debug { forwardHeaders.filter { it.first.lowercase() != "authorization" } }
