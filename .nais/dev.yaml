@@ -41,6 +41,10 @@ spec:
       allowAllUsers: true
       tenant: trygdeetaten.no
   accessPolicy:
+    inbound:
+      rules:
+        - application: org-token-tool
+          namespace: org
     outbound:
       rules:
         - application: nom-api
