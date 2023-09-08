@@ -197,7 +197,7 @@ object Application {
                         }
                         log.debug { result.headers }
                         log.debug { "Response body:\n ${result.body}" }
-                        Response(OK).body(result.body)
+                        Response(OK).headers(result.headers).body(result.body);
                     }
                 }
             }
