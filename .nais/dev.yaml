@@ -34,7 +34,6 @@ spec:
   ingresses:
     - "https://org-ekstern-proxy.ekstern.dev.nav.no"
     - "https://org-ekstern-proxy.intern.dev.nav.no"
-    - "https://org-ekstern-proxy.dev.intern.nav.no"
   azure:
     application:
       enabled: true
