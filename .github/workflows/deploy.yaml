@@ -7,10 +7,6 @@ on:
       - 'dev/*'
   workflow_dispatch:
 
-env:
-  IMAGE: ghcr.io/${{ github.repository }}/api:${{ github.sha }}
-  IMAGE_LATEST: ghcr.io/${{ github.repository }}/api:latest
-
 jobs:
   test:
     name: Run tests
@@ -42,7 +38,6 @@ jobs:
     permissions:
       contents: "read"
       id-token: "write"
-      packages: "write"
     name: Build and push Docker container
     needs: test
     runs-on: ubuntu-latest
@@ -69,18 +64,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew clean build shadowJar -x test
 
-      - name: Docker login
-        uses: docker/login-action@v2
+      - name: Build and push Docker image
+        uses: nais/docker-build-push@v0
+        id: docker-push
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push Docker container
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE }},${{ env.IMAGE_LATEST }}
+          team: org
+          image_suffix: ekstern-proxy
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+    outputs:
+      image: ${{ steps.docker-push.outputs.image }}
 
 
   deploy-dev:
@@ -96,6 +89,7 @@ jobs:
         env:
           CLUSTER: dev-gcp
           RESOURCE: .nais/dev.yaml
+          VAR: image=${{needs.build.outputs.image}}
 
   deploy-prod:
     name: Deploy to NAIS prod gcp
@@ -111,3 +105,4 @@ jobs:
         env:
           CLUSTER: prod-gcp
           RESOURCE: .nais/prod.yaml
+          VAR: image=${{needs.build.outputs.image}}
