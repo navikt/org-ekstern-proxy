@@ -197,6 +197,7 @@ object Application {
                         }
                         log.debug { result.headers }
                         log.debug { "Response body:\n ${result.body}" }
+                        log.info { "Returning response to remote Host for ${req.method} $internUrl" }
                         Response(OK).headers(result.headers).body(result.body);
                     }
                 }
