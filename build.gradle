@@ -2,7 +2,7 @@ buildscript {
     ext.kotlin_version = '2.1.10'
     ext.http4k_version = '5.47.0.0'
     ext.kotlin_loggin_version = '3.0.5'
-    ext.logback_version = '1.4.6'
+    ext.logback_version = '1.4.12'
     ext.log4j_version = '1.7.25'
     ext.logstash_encoder_version = '8.0'
     ext.prometheus_version = '0.16.0'
