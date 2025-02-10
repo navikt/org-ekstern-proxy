@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.8.10'
-    ext.http4k_version = '4.41.1.1'
+    ext.http4k_version = '5.47.0.0'
     ext.kotlin_loggin_version = '3.0.5'
     ext.logback_version = '1.4.6'
     ext.log4j_version = '1.7.25'
