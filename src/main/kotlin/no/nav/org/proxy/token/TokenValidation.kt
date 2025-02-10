@@ -46,7 +46,7 @@ object TokenValidation {
         // if (firstValidToken.isPresent) {
         // log.info { "Contains name claim: ${(firstValidToken.get().jwtTokenClaims.get("name") != null)}" }
         // }
-        return firstValidToken.isPresent
+        return firstValidToken != null
     }
 
     val isDev = (System.getenv(env_WHITELIST_FILE) == "/whitelist/dev.json")

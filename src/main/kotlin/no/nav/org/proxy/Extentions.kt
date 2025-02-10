@@ -17,8 +17,5 @@ fun Request.toNavRequest(): HttpRequest {
         override fun getHeader(headerName: String): String {
             return req.header(headerName) ?: ""
         }
-        override fun getCookies(): Array<HttpRequest.NameValue> {
-            return arrayOf()
-        }
     }
 }
