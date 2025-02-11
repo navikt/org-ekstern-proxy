@@ -57,7 +57,6 @@ dependencies {
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
 
     implementation 'io.netty:netty-handler:4.1.118.Final' // Dependency override av http4k-server-netty
-    implementation 'commons-io:commons-io:2.14.0' // Dependency override av http4k-server-netty
     implementation 'com.google.code.gson:gson:2.12.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
