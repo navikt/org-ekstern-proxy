@@ -1,22 +1,21 @@
 package no.nav.org.proxy.token
 
-import mu.KotlinLogging
 import no.nav.org.proxy.env_WHITELIST_FILE
 import no.nav.org.proxy.toNavRequest
 import no.nav.security.token.support.core.configuration.IssuerProperties
 import no.nav.security.token.support.core.configuration.MultiIssuerConfiguration
 import no.nav.security.token.support.core.validation.JwtTokenValidationHandler
 import org.http4k.core.Request
-import java.net.URL
+import java.net.URI
 
 const val env_AZURE_APP_WELL_KNOWN_URL = "AZURE_APP_WELL_KNOWN_URL"
-const val env_AZURE_APP_CLIENT_ID = "AZURE_APP_CLIENT_ID"
+//const val env_AZURE_APP_CLIENT_ID = "AZURE_APP_CLIENT_ID"
 
-const val claim_NAME = "name"
+//const val claim_NAME = "name"
 
 object TokenValidation {
 
-    private val log = KotlinLogging.logger { }
+    //private val log = KotlinLogging.logger { }
 
     val validators: MutableMap<String, JwtTokenValidationHandler?> = mutableMapOf()
 
@@ -25,7 +24,7 @@ object TokenValidation {
             MultiIssuerConfiguration(
                 mapOf(
                     "azure" to IssuerProperties(
-                        URL(System.getenv(env_AZURE_APP_WELL_KNOWN_URL)),
+                        URI(System.getenv(env_AZURE_APP_WELL_KNOWN_URL)).toURL(),
                         listOf(clientId),
                     ),
                 ),

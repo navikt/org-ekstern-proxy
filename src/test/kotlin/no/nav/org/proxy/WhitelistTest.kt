@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 const val WHITELIST_DEV = "/whitelist/dev.json"
 const val WHITELIST_PROD = "/whitelist/prod.json"
 
-public class WhitelistTest {
+class WhitelistTest {
     val devRules = Rules.parse(WHITELIST_DEV)
     val prodRules = Rules.parse(WHITELIST_PROD)
 
