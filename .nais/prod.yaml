@@ -40,6 +40,10 @@ spec:
     application:
       enabled: true
       allowAllUsers: true
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
   accessPolicy:
     outbound:
       rules:
@@ -48,3 +52,5 @@ spec:
   env:
     - name: WHITELIST_FILE
       value: '/whitelist/prod.json'
+    - name: OTEL_JAVAAGENT_LOGGING  # Bli kvitt Otel loggingen https://opentelemetry.io/docs/zero-code/java/agent/configuration/#java-agent-logging-output
+      value: none

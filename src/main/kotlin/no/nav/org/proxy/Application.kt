@@ -196,9 +196,11 @@ object Application {
                             log.info { "Status Client Timeout after ${System.currentTimeMillis() - time} millis" }
                         }
                         log.debug { result.headers }
+                        val filteredHeaders = result.headers.filter { it.first.lowercase() != "transfer-encoding" }
+                        log.debug { filteredHeaders }
                         log.debug { "Response body:\n ${result.body}" }
                         log.info { "Returning response to remote Host for ${req.method} $internUrl" }
-                        Response(OK).headers(result.headers).body(result.body);
+                        Response(OK).headers(filteredHeaders).body(result.body);
                     }
                 }
             }
