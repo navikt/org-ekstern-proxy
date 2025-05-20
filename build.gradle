@@ -56,7 +56,7 @@ configurations {
 }
 
 dependencies {
-    implementation "no.nav.security:token-validation-core:5.0.19"
+    implementation "no.nav.security:token-validation-core:5.0.27"
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
 
     implementation 'io.netty:netty-handler:4.2.1.Final' // Dependency override av http4k-server-netty
