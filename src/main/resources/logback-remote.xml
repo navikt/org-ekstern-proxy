@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <fieldNames>
-                <message>[ignore]</message>
-            </fieldNames>
-            <provider class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">
-                <pattern>{ "message": "[%X] - %m" }</pattern>
-            </provider>
+            <includeMdcKeyName>trace_id</includeMdcKeyName>
+            <includeMdcKeyName>span_id</includeMdcKeyName>
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <exclude>java\.util\.concurrent\..*</exclude>
+                <exclude>org\.apache\.catalina\..*</exclude>
+                <exclude>org\.apache\.coyote\..*</exclude>
+                <exclude>org\.apache\.tomcat\..*</exclude>
+                <exclude>org\.springframework\.aop\..*</exclude>
+                <exclude>org\.springframework\.security\.web\.ObservationFilterChainDecorator</exclude>
+            </throwableConverter>
         </encoder>
     </appender>
 
@@ -17,7 +21,6 @@
     <logger name="io.netty" level="INFO"/>
 
     <root level="INFO">
-        <appender-ref ref="stdout_json" />
+        <appender-ref ref="STDOUT_JSON" />
     </root>
-
 </configuration>
