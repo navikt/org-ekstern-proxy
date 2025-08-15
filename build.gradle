@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinTest
 
 buildscript {
-    ext.kotlin_version = '2.1.10'
+    ext.kotlin_version = '2.2.10'
     ext.http4k_version = '6.9.0.0'
     ext.kotlin_loggin_version = '3.0.5'
     ext.logback_version = '1.5.18'
