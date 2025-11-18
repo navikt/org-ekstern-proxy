@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration debug="true">
 
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%green(%d{HH:mm:ss}){faint} %cyan([%-5.5t]){faint} %cyan(%0.-5p) %yellow(%-40.40logger{39}){cyan}: %m%n</pattern>
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <exclude>java\.util\.concurrent\..*</exclude>
+                <exclude>org\.apache\.catalina\..*</exclude>
+                <exclude>org\.apache\.coyote\..*</exclude>
+                <exclude>org\.apache\.tomcat\..*</exclude>
+                <exclude>org\.springframework\.aop\..*</exclude>
+                <exclude>org\.springframework\.security\.web\.ObservationFilterChainDecorator</exclude>
+            </throwableConverter>
         </encoder>
     </appender>
-
-    <root level="DEBUG">
-        <appender-ref ref="CONSOLE"/>
-    </root>
 
     <logger name="no.nav" level="INFO"/>
     <logger name="org.apache.kafka" level="INFO"/>
     <logger name="o.a.k.clients" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
 
+    <root level="INFO">
+        <appender-ref ref="STDOUT_JSON" />
+    </root>
 </configuration>
