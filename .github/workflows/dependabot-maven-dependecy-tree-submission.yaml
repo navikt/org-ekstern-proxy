@@ -12,9 +12,9 @@ jobs:
     permissions: # The Dependency Submission API requires write permission
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - name: Setup Gradle to generate and submit dependency graphs
-        uses: gradle/gradle-build-action@v3.5.0
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1 # ratchet:gradle/gradle-build-action@v3.5.0
         with:
           dependency-graph: generate-and-submit
       - name: Run a build, generating the dependency graph snapshot which will be submitted
