@@ -3,5 +3,13 @@
     "nom-api": [
       "POST /graphql"
     ]
+  },
+  "org": {
+    "norg2": [
+      "GET /api/v1/enhet",
+      "GET /api/v2/enhet/kontaktinformasjoner",
+      "GET /api/v1/enhet/kontaktinformasjon/organisering/all",
+      "GET /api/v2/navlokalkontor"
+    ]
   }
 }

@@ -55,6 +55,8 @@ spec:
       rules:
         - application: nom-api
           namespace: nom
+        - application: norg2
+          namespace: org
   env:
     - name: WHITELIST_FILE
       value: '/whitelist/dev.json'
