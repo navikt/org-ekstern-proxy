@@ -7,7 +7,7 @@
   "org": {
     "norg2": [
       "GET /norg2/api/v1/enhet",
-      "GET /norg2/api/v2/enhet/kontaktinformasjoner",
+      "POST /norg2/api/v2/enhet/kontaktinformasjoner",
       "GET /norg2/api/v1/enhet/kontaktinformasjon/organisering/all",
       "GET /norg2/api/v2/navlokalkontor"
     ]
