@@ -3,5 +3,10 @@
     "nom-api": [
       "POST /graphql"
     ]
+  },
+  "org": {
+    "nom-sf-integrasjon": [
+      "POST /api/v1/zalaris/nik/create"
+    ]
   }
 }

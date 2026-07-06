@@ -10,6 +10,9 @@
       "POST /norg2/api/v2/enhet/kontaktinformasjoner",
       "GET /norg2/api/v1/enhet/kontaktinformasjon/organisering/all",
       "GET /norg2/api/v2/navlokalkontor"
+    ],
+    "nom-sf-integrasjon": [
+      "POST /api/v1/zalaris/nik/create"
     ]
   }
 }

@@ -57,6 +57,8 @@ spec:
           namespace: nom
         - application: norg2
           namespace: org
+        - application: nom-sf-integrasjon
+          namespace: org
   env:
     - name: WHITELIST_FILE
       value: '/whitelist/dev.json'
