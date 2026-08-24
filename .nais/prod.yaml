@@ -53,6 +53,8 @@ spec:
       rules:
         - application: nom-api
           namespace: nom
+        - application: norg2
+          namespace: org
         - application: nom-sf-integrasjon
           namespace: org
   env:
