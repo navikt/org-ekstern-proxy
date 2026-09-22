@@ -12,7 +12,9 @@
       "GET /norg2/api/v2/navlokalkontor"
     ],
     "nom-sf-integrasjon": [
-      "POST /api/v1/zalaris/nik/create"
+      "POST /api/v1/zalaris/nik/create",
+      "POST /api/v1/zalaris/ressurshendelse"
+
     ]
   }
 }
