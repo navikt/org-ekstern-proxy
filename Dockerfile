@@ -6,4 +6,4 @@ ENV LC_ALL='nb_NO.UTF-8' LANG='nb_NO.UTF-8' TZ='Europe/Oslo'
 USER nonroot
 
 COPY build/libs/app*.jar app.jar
-CMD ["app.jar"]
+CMD ["-jar", "app.jar"]
