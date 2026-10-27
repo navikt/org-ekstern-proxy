@@ -63,7 +63,43 @@ Commit output skal vise noe slikt som dette:
     Detect hardcoded secrets using Gitleaks..................................Passed
 
 
-### Test aktive hvitlisteregler
+## Bygg og tester lokalt
+
+Bruk JDK 25. Gradle henter `token-validation-core` fra GitHub Packages og leser
+`GITHUB_ACTOR` og `GITHUB_TOKEN` fra miljøet. Gradle bruker ikke innloggingen i GitHub CLI (`gh`) automatisk.
+
+Logg inn med `gh auth login` hvis du ikke allerede er innlogget. Legg deretter til scopet `read:packages`:
+
+```shell
+gh auth refresh --hostname github.com --scopes read:packages
+```
+
+Kjør bygget med brukernavn og token fra `gh`:
+
+```shell
+GITHUB_ACTOR="$(gh api user --jq .login)" \
+GITHUB_TOKEN="$(gh auth token --hostname github.com)" \
+./gradlew clean build shadowJar
+```
+
+Variablene gjelder bare for byggekommandoen. Tokenverdien lagres ikke i prosjektet eller i
+kommandohistorikken. Ikke bruk shell-sporing (`set -x`), siden det kan skrive tokenet til terminalen.
+Tokenet må ha tilgang til pakken og eventuell nødvendig SSO-autorisasjon for organisasjonen.
+
+### IntelliJ
+
+Sett **Settings → Build Tools → Gradle → Gradle JVM** til JDK 25.
+IntelliJ arver ikke variablene fra byggekommandoen over. For bygg fra IDE-en må
+`GITHUB_ACTOR` og `GITHUB_TOKEN` være tilgjengelige i Gradle-prosessens miljø også der.
+Ikke lagre tokenet i delte IDE-innstillinger eller i repoet.
+
+### cplt
+
+Kjør kommandoene i en vanlig terminal utenfor cplt først. Sandkassen filtrerer miljøvariabler
+og begrenser uthenting av tokens. En fungerende `gh`-innlogging gir derfor ikke automatisk
+agentens byggeprosess tilgang til GitHub Packages.
+
+## Test aktive hvitlisteregler
 Du kan teste om ett anrop er bestått eller ikke mot aktive regler hvis du går imot (eks med postman)
 
 https://org-ekstern-proxy.dev.intern.nav.no/internal/test/<uri-du-vil-testa>
