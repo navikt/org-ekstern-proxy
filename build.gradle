@@ -85,8 +85,8 @@ dependencies {
     implementation "io.prometheus:simpleclient_common:$prometheus_version"
     implementation "io.prometheus:simpleclient_hotspot:$prometheus_version"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.1.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.1.3'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version"
     testImplementation 'no.nav.security:mock-oauth2-server:6.1.3'
