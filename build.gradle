@@ -18,7 +18,7 @@ plugins {
     id 'application'
     id 'idea'
 
-    id 'com.gradleup.shadow' version '9.0.2'
+    id 'com.gradleup.shadow' version '9.6.1'
 }
 
 group = "no.nav.org.org-ekstern-proxy"
