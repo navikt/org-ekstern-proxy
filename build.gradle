@@ -1,11 +1,10 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinTest
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 buildscript {
     ext.kotlin_version = '2.4.21'
     ext.http4k_version = '6.61.0.0'
     ext.kotlin_loggin_version = '3.0.5'
-    ext.logback_version = '1.5.32'
+    ext.logback_version = '1.6.6'
     ext.log4j_version = '1.7.25'
     ext.logstash_encoder_version = '9.0'
     ext.prometheus_version = '0.16.0'
@@ -19,7 +18,7 @@ plugins {
     id 'application'
     id 'idea'
 
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '9.0.2'
 }
 
 group = "no.nav.org.org-ekstern-proxy"
@@ -47,20 +46,30 @@ tasks.withType(JavaExec).configureEach {
 repositories {
     mavenCentral()
     maven {
+        url = uri("https://maven.pkg.github.com/navikt/token-support")
+        credentials {
+            username = System.getenv("GITHUB_ACTOR")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+        content {
+            includeGroup("no.nav.security")
+        }
+    }
+    maven {
         url = uri("https://plugins.gradle.org/m2/")
     }
 }
 
-configurations {
-    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+configurations.configureEach {
+    exclude(group: 'org.slf4j', module: 'slf4j-log4j12')
 }
 
 dependencies {
-    implementation "no.nav.security:token-validation-core:5.0.19"
+    implementation "no.nav.security:token-validation-core:7.0.1"
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
 
     implementation 'io.netty:netty-handler:4.2.19.Final' // Dependency override av http4k-server-netty
-    implementation 'com.google.code.gson:gson:2.12.1'
+    implementation 'com.google.code.gson:gson:2.15.0'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -77,31 +86,19 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test:2.1.10'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:2.1.10'
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version"
+    testImplementation 'no.nav.security:mock-oauth2-server:6.1.3'
 }
 
 test {
     useJUnitPlatform()
 }
 
-sourceSets {
-    main.kotlin.srcDirs += 'src/main/kotlin'
-    test.kotlin.srcDirs += 'src/test/kotlin'
-}
-tasks.withType(KotlinCompile).configureEach {
-    kotlinOptions {
-        jvmTarget = "21"
-    }
-}
-tasks.withType(KotlinTest).configureEach {
-    kotlinOptions {
-        jvmTarget = "21"
-    }
-}
-
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+    jvmToolchain(25)
+
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_25
     }
 }
