@@ -67,7 +67,7 @@ configurations.configureEach {
 dependencies {
     implementation "no.nav.security:token-validation-core:7.0.1"
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
-    implementation platform('tools.jackson:jackson-bom:3.2.3')
+    implementation platform('tools.jackson:jackson-bom:3.2.4')
 
     implementation 'io.netty:netty-handler:4.2.19.Final' // Dependency override av http4k-server-netty
     implementation 'com.google.code.gson:gson:2.15.0'
