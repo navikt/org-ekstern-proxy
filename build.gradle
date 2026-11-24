@@ -65,7 +65,7 @@ configurations.configureEach {
 }
 
 dependencies {
-    implementation "no.nav.security:token-validation-core:7.0.1"
+    implementation "no.nav.security:token-validation-core:7.1.0"
     implementation platform('org.jetbrains.kotlin:kotlin-bom')
     implementation platform('tools.jackson:jackson-bom:3.3.0')
 
